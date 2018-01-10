@@ -1,10 +1,10 @@
 
 const clientId = "c4a31972eacb4396b522dd3923389115";
-const spotifySearchAPI = 'https://api.spotify.com/v1/search';
+
 const spotifyUserProfileAPI = 'https://api.spotify.com/v1/me';
 const spotifyPlaylistAPI = 'https://api.spotify.com/v1/users/${userId}/playlists';
 const spotifyPlaylistTracksAPI = 'https://api.spotify.com/v1/users/${userId}/playlists/${playlistId}/tracks';
-const spotifyRedirectUrl = "http://marcor_jammming.surge.sh";
+const spotifyRedirectUrl = 'http://localhost:3000' /*"http://marcor_jammming.surge.sh";*/
 
 let accessToken;
 let expiresIn;
@@ -37,21 +37,20 @@ const Spotify = {
 
   /* returns a promise */
   search(term) {
-    return fetch(`${spotifySearchAPI}?type=track&q=${term}`, {headers: this.buildAuthorizationHeader()}).then(response => response.json()).then(jsonResponse => {
-      if (jsonResponse.tracks) {
-        return jsonResponse.tracks.items.map(function(track) {
-          return {
-            id: track.id,
-            name: track.name,
-            uri: track.uri,
-            album: track.album.name,
-            artist: track.artists[0].name
-          }
-        })
-      } else {
+    const accessToken = Spotify.getAccessToken();
+    return fetch(`https://api.spotify.com/v1/search?type=track&q=${term}`, {headers: this.buildAuthorizationHeader()}).then(response => response.json()).then(jsonResponse => {
+      if (!jsonResponse.tracks) {
         return [];
       }
+      return jsonResponse.tracks.items.map(track => ({
+        id: track.id,
+        name: track.name,
+        artist: track.artists[0].name,
+        album: track.album.name,
+        uri: track.uri
+      }));
     });
+
   },
 
   /* returns a promise */
@@ -66,7 +65,9 @@ const Spotify = {
   createPlaylistWithTracks(userId, playlistName, playlistTracks) {
     let jsonBody = JSON.stringify({name: playlistName, public: false});
     let url = spotifyPlaylistAPI.replace("${userId}", userId);
-    return fetch(url, { headers: this.buildAuthorizationHeader(), method:'POST', body: jsonBody}).then(response => this.handleResponse(response)).then(jsonResponse => {
+    return fetch(url, { headers: this.buildAuthorizationHeader(), method:'POST', body: jsonBody})
+    .then(response => this.handleResponse(response))
+    .then(jsonResponse => {
       console.log("playlist successful created.");
       let playlistId = jsonResponse.id;
       return this.saveTracksToPlaylist(userId, playlistId, playlistTracks);
@@ -77,7 +78,9 @@ const Spotify = {
   saveTracksToPlaylist(userId, playlistId, playlistTracks) {
     let jsonBody = JSON.stringify(playlistTracks);
     let url = spotifyPlaylistTracksAPI.replace("${userId}", userId).replace("${playlistId}", playlistId);
-    return fetch(url, { headers: this.buildAuthorizationHeader(), method:'POST', body: jsonBody}).then(response => this.handleResponse(response)).then(jsonResponse => {
+    return fetch(url, { headers: this.buildAuthorizationHeader(), method:'POST', body: jsonBody})
+    .then(response => this.handleResponse(response))
+    .then(jsonResponse => {
       console.log("tracks successful stored");
       return jsonResponse.snapshot_id;
     });
