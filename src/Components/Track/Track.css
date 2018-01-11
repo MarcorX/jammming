@@ -1,7 +1,6 @@
 .Track {
   display: flex;
   align-items: center;
-  margin: auto;
   border-bottom: 1px solid rgba(256, 256, 256, 0.8);
 }
 
@@ -33,4 +32,8 @@
   font-size: .83rem;
   font-weight: 300;
   color: rgba(256, 256, 256, 0.8);
+}
+
+.Track-information .audio-player {
+  margin-bottom: .4rem;
 }
