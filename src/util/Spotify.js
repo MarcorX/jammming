@@ -4,7 +4,7 @@ const clientId = "c4a31972eacb4396b522dd3923389115";
 const spotifyUserProfileAPI = 'https://api.spotify.com/v1/me';
 const spotifyPlaylistAPI = 'https://api.spotify.com/v1/users/${userId}/playlists';
 const spotifyPlaylistTracksAPI = 'https://api.spotify.com/v1/users/${userId}/playlists/${playlistId}/tracks';
-const spotifyRedirectUrl = 'http://localhost:3000' /*"http://marcor_jammming.surge.sh";*/
+const spotifyRedirectUrl = 'https://marcorx.github.io/jammming/build/' /*"http://marcor_jammming.surge.sh";*/
 
 let accessToken;
 let expiresIn;
